@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 
-const veterinariosSchema = new Schema(
+const veterinarioSchema = new Schema(
   {
     nombre: {
       type: String,
