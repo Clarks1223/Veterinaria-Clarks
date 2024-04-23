@@ -2,6 +2,8 @@
 import { Router } from "express";
 //para proteger las rutas
 import verificarAutenticacion from "../middlewares/autenticacion.js";
+//middlewar
+import { validacionVeterionario } from "../middlewares/validacionVeterinario.js";
 // importar funciones desde los controladores
 import {
   login,
@@ -19,7 +21,7 @@ import {
 
 const router = Router();
 router.post("/login", login);
-router.post("/registro", registro);
+router.post("/registro", validacionVeterionario, registro);
 router.get("/confirmar/:token", confirmarEmail);
 router.get("/veterinarios", listaVeterinarios);
 router.post("/recuperar-password", recuperarPassword);
@@ -28,7 +30,7 @@ router.post("/nuevo-password/:token", nuevoPassword);
 // estas rutas se protegen por que se muestran luego de que el usuario ha iniciado sesion
 router.get("/perfil", verificarAutenticacion, perfil);
 router.put(
-  "/veterinario/actualizar-password",
+  "/veterinario/actualizarpassword",
   verificarAutenticacion,
   actualizarPassword
 );

@@ -88,11 +88,50 @@ const detallleVeterinario = async (req, res) => {
     return res.status(404).json({ msg: `no existe el veterinario  ${id}` });
   res.status(200).json({ msg: veterinarioBDD });
 };
-const actualizarPerfil = (req, res) => {
-  res.status(200).json({ res: "Actualizar perfil de un veterinario" });
+const actualizarPerfil = async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id))
+    return res.status(404).json({ msg: "El id no es valido" });
+  if (Object.values(req.body).includes(""))
+    return res.status(400).json({ msg: "Debe llenar todos los datos" });
+  const veterinarioBDD = await Veterinario.findById(id);
+  if (!veterinarioBDD)
+    return res
+      .status(404)
+      .json({ msg: `No se ha encontrado al veterinario ${id}` });
+
+  if (veterinarioBDD.email != req.body.email) {
+    const veterinarioBDDMail = await Veterinario.findOne({
+      email: req.body.email,
+    });
+    if (veterinarioBDDMail) {
+      return res
+        .status(404)
+        .json({ msg: "El email ya se encuentra registrado" });
+    }
+  }
+  veterinarioBDD.nombre = req.body.nombre || veterinarioBDD?.nombre;
+  veterinarioBDD.apellido = req.body.apellido || veterinarioBDD?.apellido;
+  veterinarioBDD.direccion = req.body.direccion || veterinarioBDD?.direccion;
+  veterinarioBDD.telefono = req.body.telefono || veterinarioBDD?.telefono;
+  veterinarioBDD.email = req.body.email || veterinarioBDD?.email;
+  await veterinarioBDD.save();
+  res.status(200).json({ msg: "Perfil actualizado correctamente" });
 };
-const actualizarPassword = (req, res) => {
-  res.status(200).json({ res: "Actualizar Password de un veterinario" });
+const actualizarPassword = async (req, res) => {
+  const veterinarioBDD = await Veterinario.findById(req.veterinarioBDD._id);
+  if (!veterinarioBDD)
+    return res.status(404).json({ msg: "No se ha encontrado al usuario" });
+  const verificarPassword = await veterinarioBDD.matchPassword(
+    req.body.passwordactual
+  );
+  if (!verificarPassword)
+    return res.status(404).json({ msg: "El password actual no es correcto" });
+  veterinarioBDD.password = await veterinarioBDD.encrypPassword(
+    req.body.passwordnuevo
+  );
+  await veterinarioBDD.save();
+  res.status(200).json({ msg: "Su contraseña se ha cambiado correctamente" });
 };
 const recuperarPassword = async (req, res) => {
   const { email } = req.body;
