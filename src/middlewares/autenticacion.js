@@ -1,4 +1,5 @@
 //este archivo permite proteger las rutas.
+//estudiar mas este archivo
 //importaciones necesarias
 import jwt from "jsonwebtoken";
 import Veterinario from "../models/Veterinarios.js";
@@ -18,6 +19,9 @@ const verificarAutenticacion = async (req, res, next) => {
       req.veterinarioBDD = await Veterinario.findById(id)
         .lean()
         .select("-password");
+      next();
+    } else {
+      req.pacienteBDD = await Paciente.findById(id).lean().select("-password");
       next();
     }
   } catch (error) {

@@ -38,7 +38,7 @@ const sendMailToUser = (userMail, token) => {
 // plantilla para recuperar el password
 const sendMailToRecoveryPassword = async (userMail, token) => {
   let info = await transporter.sendMail({
-    from: "gustavouchuarii@gmail.com",
+    from: process.env.USER_MAIL,
     to: userMail,
     subject: "Correo para reestablecer tu contraseña",
     html: `<h1>Sistema de gestion Veterinaria 🐶🐮🦄🦌🐎</h1>
@@ -48,4 +48,23 @@ const sendMailToRecoveryPassword = async (userMail, token) => {
   });
   console.log("Mensaje enviado satisfactoriamente");
 };
-export { sendMailToUser, sendMailToRecoveryPassword };
+
+//plantilla para registrar paciente
+const sendMailToPaciente = async (userMail, password) => {
+  let info = await transporter.sendMail({
+    from: "admin@vet.com",
+    to: userMail,
+    subject: "Correo de bienvenida",
+    html: `
+  <h1>Sistema de gestión (VET-ESFOT 🐶 😺)</h1>
+  <hr>
+  <p>Contraseña de acceso: ${password}</p>
+  <a href=${process.env.URL_BACKEND}paciente/login>Clic para iniciar sesión</a>
+  <hr>
+  <footer>Grandote te da la Bienvenida!</footer>
+  `,
+  });
+  console.log("Mensaje enviado satisfactoriamente: ", info.messageId);
+};
+
+export { sendMailToUser, sendMailToRecoveryPassword, sendMailToPaciente };

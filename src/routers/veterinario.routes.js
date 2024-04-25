@@ -3,7 +3,7 @@ import { Router } from "express";
 //para proteger las rutas
 import verificarAutenticacion from "../middlewares/autenticacion.js";
 //middlewar
-import { validacionVeterionario } from "../middlewares/validacionVeterinario.js";
+import { validacionVeterinario } from "../middlewares/validacionVeterinario.js";
 // importar funciones desde los controladores
 import {
   login,
@@ -21,7 +21,7 @@ import {
 
 const router = Router();
 router.post("/login", login);
-router.post("/registro", validacionVeterionario, registro);
+router.post("/registro", validacionVeterinario, registro);
 router.get("/confirmar/:token", confirmarEmail);
 router.get("/veterinarios", listaVeterinarios);
 router.post("/recuperar-password", recuperarPassword);
