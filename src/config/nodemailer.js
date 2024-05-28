@@ -1,10 +1,10 @@
-import nodemailer from "nodemailer";
-import dotenv from "dotenv";
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
 let transporter = nodemailer.createTransport({
-  service: "gmail",
+  service: 'gmail',
   host: process.env.HOST_MAIL,
   port: process.env.PORT_MAIL,
   auth: {
@@ -18,19 +18,15 @@ const sendMailToUser = (userMail, token) => {
   let mailOptions = {
     from: process.env.USER_MAIL,
     to: userMail,
-    subject: "Verifica tu cuenta",
-    html: `<p>Hola, haz clic <a href="${
-      process.env.URL_BACKEND
-    }confirmar/${encodeURIComponent(
-      token
-    )}">aquí</a> para confirmar tu cuenta.</p>`,
+    subject: 'Verifica tu cuenta',
+    html: `<p>Hola, haz clic <a href="${process.env.URL_FRONTEND}confirmar/${token}">aquí</a> para confirmar tu cuenta.</p>`,
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error);
     } else {
-      console.log("Correo enviado: " + info.response);
+      console.log('Correo enviado: ' + info.response);
     }
   });
 };
@@ -40,21 +36,21 @@ const sendMailToRecoveryPassword = async (userMail, token) => {
   let info = await transporter.sendMail({
     from: process.env.USER_MAIL,
     to: userMail,
-    subject: "Correo para reestablecer tu contraseña",
+    subject: 'Correo para reestablecer tu contraseña',
     html: `<h1>Sistema de gestion Veterinaria 🐶🐮🦄🦌🐎</h1>
     <hr>
-    <a href=${process.env.URL_BACKEND}recuperar-password/${token}>Clic para reestablecer tu contraseña</a>
+    <a href=${process.env.URL_FRONTEND}recuperar-password/${token}>Clic para reestablecer tu contraseña</a>
     <hr>`,
   });
-  console.log("Mensaje enviado satisfactoriamente");
+  console.log('Mensaje enviado satisfactoriamente');
 };
 
 //plantilla para registrar paciente
 const sendMailToPaciente = async (userMail, password) => {
   let info = await transporter.sendMail({
-    from: "admin@vet.com",
+    from: 'admin@vet.com',
     to: userMail,
-    subject: "Correo de bienvenida",
+    subject: 'Correo de bienvenida',
     html: `
   <h1>Sistema de gestión (VET-ESFOT 🐶 😺)</h1>
   <hr>
@@ -64,7 +60,7 @@ const sendMailToPaciente = async (userMail, password) => {
   <footer>Grandote te da la Bienvenida!</footer>
   `,
   });
-  console.log("Mensaje enviado satisfactoriamente: ", info.messageId);
+  console.log('Mensaje enviado satisfactoriamente: ', info.messageId);
 };
 
 export { sendMailToUser, sendMailToRecoveryPassword, sendMailToPaciente };
