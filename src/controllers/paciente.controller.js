@@ -1,25 +1,25 @@
-import Paciente from "../models/Paciente.js";
-import { sendMailToPaciente } from "../config/nodemailer.js";
-import generarJWT from "../helpers/crearJWT.js";
-import mongoose, { mongo } from "mongoose";
+import Paciente from '../models/Paciente.js';
+import { sendMailToPaciente } from '../config/nodemailer.js';
+import generarJWT from '../helpers/crearJWT.js';
+import mongoose, { mongo } from 'mongoose';
 
 const loginPaciente = async (req, res) => {
   const { email, password } = req.body;
-  if (Object.values(req.body).includes(""))
+  if (Object.values(req.body).includes(''))
     return res
       .status(404)
-      .json({ msg: "Lo sentimos, debes llenar todos los campos" });
+      .json({ msg: 'Lo sentimos, debes llenar todos los campos' });
   const pacienteBDD = await Paciente.findOne({ email });
   if (!pacienteBDD)
     return res
       .status(404)
-      .json({ msg: "Lo sentimos, el usuario no se encuentra registrado" });
+      .json({ msg: 'Lo sentimos, el usuario no se encuentra registrado' });
   const verificarPassword = await pacienteBDD.matchPassword(password);
   if (!verificarPassword)
     return res
       .status(404)
-      .json({ msg: "Lo sentimos, el password no es el correcto" });
-  const token = generarJWT(pacienteBDD._id, "paciente");
+      .json({ msg: 'Lo sentimos, el password no es el correcto' });
+  const token = generarJWT(pacienteBDD._id, 'paciente');
   const {
     nombre,
     propietario,
@@ -35,18 +35,19 @@ const loginPaciente = async (req, res) => {
     emailP,
     celular,
     convencional,
+    rol: 'paciente',
     _id,
   });
 };
 const perfilPaciente = (req, res) => {
-  res.send("pagina para ver el perfil de un paciente");
+  res.send('pagina para ver el perfil de un paciente');
 };
 const listarPacientes = async (req, res) => {
   const pacientes = await Paciente.find({ estado: true })
-    .where("veterinario")
+    .where('veterinario')
     .equals(req.veterinarioBDD)
-    .select("-salida -createdAt -updatedAt -__v")
-    .populate("veterinario", "_id nombre apellido");
+    .select('-salida -createdAt -updatedAt -__v')
+    .populate('veterinario', '_id nombre apellido');
   res.status(200).json(pacientes);
 };
 const detallePaciente = async (req, res) => {
@@ -56,44 +57,44 @@ const detallePaciente = async (req, res) => {
       .status(404)
       .json({ msg: `Lo sentimos, no existe el veterinario ${id}` });
   const paciente = await Paciente.findById(id)
-    .select("-createdAt -updatedAt -__v")
-    .populate("veterinario", "_id nombre apellido");
+    .select('-createdAt -updatedAt -__v')
+    .populate('veterinario', '_id nombre apellido');
   res.status(200).json(paciente);
 };
 const registrarPaciente = async (req, res) => {
   const { email } = req.body;
-  if (Object.values(req.body).includes(""))
+  if (Object.values(req.body).includes(''))
     return res
       .status(400)
-      .json({ msg: "Lo sentimos, debes llenar todos los campos" });
+      .json({ msg: 'Lo sentimos, debes llenar todos los campos' });
   const verificarEmailBDD = await Paciente.findOne({ email });
   if (verificarEmailBDD)
     return res
       .status(400)
-      .json({ msg: "Lo sentimos, el email ya se encuentra registrado" });
+      .json({ msg: 'Lo sentimos, el email ya se encuentra registrado' });
   const nuevoPaciente = new Paciente(req.body);
   const password = Math.random().toString(36).slice(2);
-  nuevoPaciente.password = await nuevoPaciente.encrypPassword("vet" + password);
-  await sendMailToPaciente(email, "vet" + password);
+  nuevoPaciente.password = await nuevoPaciente.encrypPassword('vet' + password);
+  await sendMailToPaciente(email, 'vet' + password);
   nuevoPaciente.veterinario = req.veterinarioBDD._id;
   await nuevoPaciente.save();
   res
     .status(200)
-    .json({ msg: "Registro exitoso del paciente y correo enviado" });
+    .json({ msg: 'Registro exitoso del paciente y correo enviado' });
 };
 const actualizarPaciente = async (req, res) => {
   const { id } = req.params;
-  if (Object.values(req.params).includes(""))
-    return res.status(400).json({ msg: "Debes llenar todos los campos" });
+  if (Object.values(req.params).includes(''))
+    return res.status(400).json({ msg: 'Debes llenar todos los campos' });
   if (!mongoose.Types.ObjectId.isValid(id))
     return res.status(400).json({ msg: `No existe el veterinario ${id}` });
   await Paciente.findByIdAndUpdate(req.params.id, req.body);
-  res.status(200).json({ msg: "Actualizacion exitosa del paciente" });
+  res.status(200).json({ msg: 'Actualizacion exitosa del paciente' });
 };
 const eliminarPaciente = async (req, res) => {
   const { id } = req.params;
-  if (Object.values(req.params).includes(""))
-    return res.status(200).json({ msg: "Debe ingresar todos los datos" });
+  if (Object.values(req.params).includes(''))
+    return res.status(200).json({ msg: 'Debe ingresar todos los datos' });
   if (!mongoose.Types.ObjectId.isValid(id))
     return res.status(400).json({ msg: `No existe el verterinario ${id}` });
   const { salida } = req.body;
@@ -101,7 +102,7 @@ const eliminarPaciente = async (req, res) => {
     salida: Date.parse(salida),
     estado: false,
   });
-  res.status(200).json({ msg: "La fecha de salida se ha actualizado" });
+  res.status(200).json({ msg: 'La fecha de salida se ha actualizado' });
 };
 
 export {

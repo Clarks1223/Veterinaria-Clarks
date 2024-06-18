@@ -54,7 +54,7 @@ const eliminarTratamiento = async (req, res) => {
   await Tratamiento.findByIdAndDelete(req.params.id);
   res
     .status(200)
-    .json({ msg: "Se ha eliminado el tratamiento correctamwente" });
+    .json({ msg: "Se ha eliminado el tratamiento correctamente" });
 };
 const cambiarEstado = async (req, res) => {
   // activo: El paciente tiene un tratamiento activo el cual esta aún siendo atendido y se presenta en la UI.

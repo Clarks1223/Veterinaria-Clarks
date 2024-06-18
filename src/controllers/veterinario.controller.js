@@ -17,11 +17,14 @@ const login = async (req, res) => {
   const veterinarioBDD = await Veterinario.findOne({ email }).select(
     '-status -__v -token -updatedAt -createdAt'
   );
-  if (veterinarioBDD?.confirmEmail == false)
-    return res.status(404).json({ msg: 'Debes verificar el email' });
 
   if (!veterinarioBDD)
     return res.status(404).json({ msg: 'Este usuario no ha sido registrado' });
+
+  if (veterinarioBDD?.confirmEmail == false)
+    return res
+      .status(404)
+      .json({ msg: 'Verifica tu cuenta de correo para iniciar sesion' });
 
   const verificarPassword = await veterinarioBDD.matchPassword(password);
   if (!verificarPassword)
@@ -38,6 +41,7 @@ const login = async (req, res) => {
     telefono,
     _id,
     email: veterinarioBDD.email,
+    rol: 'veterinario',
   });
 };
 const perfil = (req, res) => {
