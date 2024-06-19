@@ -15,12 +15,12 @@ export const validacionTratamiento = [
   check("nombre")
     .isLength({ min: 3, max: 20 })
     .withMessage('El campo "nombre" debe tener entre 3 y 20 caracteres')
-    .isAlpha("es-ES", { ignore: "áéíóúÁÉÍÓÚñÑ" })
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/)
     .withMessage('El campo "nombre" debe contener solo letras')
     .customSanitizer((value) => value?.trim()),
 
   check("descripcion")
-    .isLength({ min: 5, max: 30 })
+    .isLength({ min: 5, max: 40 })
     .withMessage('El campo "descripcion" debe tener entre 5 y 30 caracteres')
     .customSanitizer((value) => value?.trim()),
 

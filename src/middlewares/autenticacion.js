@@ -15,7 +15,7 @@ const verificarAutenticacion = async (req, res, next) => {
       authorization.split(" ")[1],
       process.env.JWT_SECRET
     );
-    if (rol === "veterinario") {
+    if (rol === "veterinario"||rol === "paciente") {
       req.veterinarioBDD = await Veterinario.findById(id)
         .lean()
         .select("-password");

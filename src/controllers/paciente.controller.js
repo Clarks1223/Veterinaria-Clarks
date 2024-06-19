@@ -43,12 +43,19 @@ const perfilPaciente = (req, res) => {
   res.send('pagina para ver el perfil de un paciente');
 };
 const listarPacientes = async (req, res) => {
-  const pacientes = await Paciente.find({ estado: true })
-    .where('veterinario')
-    .equals(req.veterinarioBDD)
-    .select('-salida -createdAt -updatedAt -__v')
-    .populate('veterinario', '_id nombre apellido');
-  res.status(200).json(pacientes);
+  if (req.pacienteBDD && 'propietario' in req.pacienteBDD) {
+    const pacientes = await Paciente.find(req.pacienteBDD._id)
+      .select('-salida -createdAt -updatedAt -__v')
+      .populate('veterinario', '_id nombre apellido');
+    res.status(200).json(pacientes);
+  } else {
+    const pacientes = await Paciente.find({ estado: true })
+      .where('veterinario')
+      .equals(req.veterinarioBDD)
+      .select('-salida -createdAt -updatedAt -__v')
+      .populate('veterinario', '_id nombre apellido');
+    res.status(200).json(pacientes);
+  }
 };
 const detallePaciente = async (req, res) => {
   const { id } = req.params;
