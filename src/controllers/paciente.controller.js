@@ -1,4 +1,5 @@
 import Paciente from '../models/Paciente.js';
+import Veterinario from '../models/Veterinarios.js';
 import { sendMailToPaciente } from '../config/nodemailer.js';
 import generarJWT from '../helpers/crearJWT.js';
 import mongoose, { mongo } from 'mongoose';
@@ -42,27 +43,40 @@ const loginPaciente = async (req, res) => {
 const perfilPaciente = (req, res) => {
   res.send('pagina para ver el perfil de un paciente');
 };
+
 const listarPacientes = async (req, res) => {
-  if (req.pacienteBDD && 'propietario' in req.pacienteBDD) {
-    const pacientes = await Paciente.find(req.pacienteBDD._id)
-      .select('-salida -createdAt -updatedAt -__v')
-      .populate('veterinario', '_id nombre apellido');
-    res.status(200).json(pacientes);
+  const { id } = req.params;
+  //verifico que el id sea valido
+  if (!mongoose.Types.ObjectId.isValid(id))
+    return res.status(404).json({ msg: `Lo sentimos, no existe el paciente` });
+  //Verifico que el id pertenezca a un paciente
+  const solicitante = await Paciente.findById(id);
+  //
+  if (solicitante) {
+    const consultaPaciente = await Paciente.find({ _id: id, estado: true });
+    return res.status(200).json( consultaPaciente);
   } else {
-    const pacientes = await Paciente.find({ estado: true })
-      .where('veterinario')
-      .equals(req.veterinarioBDD)
-      .select('-salida -createdAt -updatedAt -__v')
-      .populate('veterinario', '_id nombre apellido');
-    res.status(200).json(pacientes);
+    const solicitante2 = await Veterinario.findById(id);
+    if (!solicitante2)
+      return res
+        .status(404)
+        .json({ msg: 'No se ha podido localizar al paciente' });
+
+    const consultaVet = await Paciente.find({
+      veterinario: id,
+      estado: true,
+    });
+    return res.status(200).json(consultaVet);
   }
 };
+
 const detallePaciente = async (req, res) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id))
     return res
       .status(404)
       .json({ msg: `Lo sentimos, no existe el veterinario ${id}` });
+
   const paciente = await Paciente.findById(id)
     .select('-createdAt -updatedAt -__v')
     .populate('veterinario', '_id nombre apellido');
